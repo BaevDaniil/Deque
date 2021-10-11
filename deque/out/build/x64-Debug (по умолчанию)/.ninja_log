@@ -1,0 +1,21 @@
+# ninja log v5
+1	856	655607897	CMakeFiles/deque.dir/main.cpp.obj	81bd181c58d05158
+856	1215	655607898	deque.exe	701b7587fc4efb92
+1	438	655608723	CMakeFiles/deque.dir/main.cpp.obj	81bd181c58d05158
+443	657	655608723	deque.exe	701b7587fc4efb92
+0	11	0	clean	9992afb1f91dc381
+0	574	655608741	CMakeFiles/deque.dir/main.cpp.obj	81bd181c58d05158
+575	747	655608741	deque.exe	701b7587fc4efb92
+0	9	0	clean	9992afb1f91dc381
+0	470	655629400	CMakeFiles/deque.dir/main.cpp.obj	81bd181c58d05158
+471	770	655629400	deque.exe	701b7587fc4efb92
+0	434	655629411	CMakeFiles/deque.dir/main.cpp.obj	81bd181c58d05158
+435	692	655629411	deque.exe	701b7587fc4efb92
+1	414	655629823	CMakeFiles/deque.dir/main.cpp.obj	81bd181c58d05158
+416	662	655629823	deque.exe	701b7587fc4efb92
+0	396	655630017	CMakeFiles/deque.dir/main.cpp.obj	81bd181c58d05158
+397	561	655630017	deque.exe	701b7587fc4efb92
+0	439	655630052	CMakeFiles/deque.dir/main.cpp.obj	81bd181c58d05158
+440	611	655630052	deque.exe	701b7587fc4efb92
+0	562	655630082	CMakeFiles/deque.dir/main.cpp.obj	81bd181c58d05158
+564	737	655630083	deque.exe	701b7587fc4efb92
