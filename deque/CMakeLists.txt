@@ -6,6 +6,6 @@ cmake_minimum_required (VERSION 3.8)
 project ("deque")
 
 # Добавьте источник в исполняемый файл этого проекта.
-add_executable (deque  "deque.h" "main.cpp" "allocator.h" )
+add_executable (deque  "deque.h"   )
 
 # TODO: Добавьте тесты и целевые объекты, если это необходимо.
