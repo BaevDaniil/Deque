@@ -26,33 +26,40 @@ private:
     node_t* next;             ///< pointer to next element (nullptr if the node is the last)
   };
 
+private:
+  node_t* head;               ///< pointer to the beginning of the deque (nullptr if the deque is empty)
+  node_t* tail;               ///< pointer to the end of the deque (nullptr if the deque is empty)
+  size_t size;                ///< size in elements in the deque
+
   /**
    * @brief Deque iterator class
    * @tparam IsConst const's of this iterator
    */
   template<bool IsConst>
-  class common_iterator : public std::iterator<std::random_access_iterator_tag, T> {
-    friend class deque;
+  class common_iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
+    friend class deque_t;
 
   private:
-    node_t* data;            ///< pointer to node in deque
-  public:
+    node_t* data;               ///< pointer to node in deque
+    node_t* head;               ///< pointer to the beginning of the deque (nullptr if the deque is empty)
+    node_t* tail;               ///< pointer to the end of the deque (nullptr if the deque is empty)
+  private:
     /**
      * @brief Constructor from pointer to data
      * @param[in] data pointer in deque list
      */
-    common_iterator(node_t* data) : data(data) {};
+    common_iterator(node_t* data, node_t* head, node_t* tail) : data(data), head(head), tail(tail) {};
 
     /**
      * @brief Default constructor
      */
     common_iterator() = default;
-  
+  public:
     /**
      * @brief Copy constructor
      * @param[in] other iterator to copy
      */
-    common_iterator(common_iterator const& other) : data(other.data) {};
+    common_iterator(common_iterator const& other) : data(other.data), head(other.head), tail(other.tail) {};
 
     /**
      * @brief Copy assignment operator
@@ -61,7 +68,9 @@ private:
      */
     common_iterator& operator=(common_iterator const& other) { 
       data = other.data;
-      return *this 
+      head = other.head;
+      tail = other.tail;
+      return *this;
     }
 
     /**
@@ -85,7 +94,10 @@ private:
      * @return reference to this iterator
      */
     common_iterator& operator++() {
-      data = data->next;
+      if (this == nullptr)
+        data = head;
+      else
+        data = data->next;
       return *this;
     }
 
@@ -104,7 +116,10 @@ private:
      * @return reference to this iterator
      */
     common_iterator& operator--() {
-      data = data->prev;
+      if (data == nullptr)
+        data = tail;
+      else
+        data = data->prev;
       return *this;
     }
 
@@ -133,16 +148,12 @@ private:
      * @return true if iterators point to the different elements else false
      */
     bool operator!=(common_iterator const& other) const {
-      return !(this == other);
+      return !(this->data == other.data);
     }
   };
 
 
 private:
-  node_t* head;               ///< pointer to the beginning of the deque (nullptr if the deque is empty)
-  node_t* tail;               ///< pointer to the end of the deque (nullptr if the deque is empty)
-  size_t size;                ///< size in elements in the deque
-
   using alloc_traits = std::allocator_traits<Allocator>;  //allocator traits
 
   template <typename T>
@@ -243,23 +254,23 @@ public:
   void PushBack(T&& data) {
     try {
       node_t* newNode = node_allocator_traits::allocate(nodeAlloc, 1);
+      newNode->data = data;
+      newNode->prev = tail;
+      newNode->next = nullptr;
+
+      if (tail)
+        tail->next = newNode;
+
+      tail = newNode;
+
+      if (head == nullptr)
+        head = tail;
+
+      ++size;
     }
     catch (std::bad_alloc){
       throw;
     }
-
-    newNode->prev = tail;
-    newNode->next = nullptr;
-
-    if (tail)
-      tail->next = newNode;
-
-    tail = newNode;
-
-    if (head == nullptr)
-      head = tail;
-
-    ++size;
   }
 
   /**
@@ -270,23 +281,23 @@ public:
   void PushFront(T&& data) {
     try {
       node_t* newNode = node_allocator_traits::allocate(nodeAlloc, 1);
+      newNode->data = data;
+      newNode->next = head;
+      newNode->prev = nullptr;
+
+      if (head)
+        head->prev = newNode;
+
+      head = newNode;
+
+      if (tail == nullptr)
+        tail = head;
+
+      ++size;
     }
     catch (std::bad_alloc) {
       throw;
     }
-
-    newNode->next = head;
-    newNode->prev = nullptr;
-
-    if (head)
-      head->prev = newNode;
-
-    head = newNode;
-
-    if (tail == nullptr)
-      tail = head;
-
-    ++size;
   }
 
   /**
@@ -335,7 +346,7 @@ public:
    * @return iterator pointed to the first element of deque
    */
   iterator begin() const {
-    return iterator(head);
+    return iterator(head, head, tail);
   }
 
   /*
@@ -343,7 +354,15 @@ public:
    * @return iterator pointed to the next after last element of deque
    */
   iterator end() const {
-    return iterator(tail->next);
+    return iterator(tail->next, head, tail);
+  }
+
+  std::reverse_iterator<iterator> rbegin() {
+    return (std::reverse_iterator<iterator>)end();
+  }
+
+  std::reverse_iterator<iterator> rend() {
+    return (std::reverse_iterator<iterator>)begin();
   }
 
   /*
@@ -351,7 +370,7 @@ public:
    * @return const iterator pointed to the first element of deque
    */
   const_iterator cbegin() const noexcept {
-    return const_iterator(head);
+    return const_iterator(head, head, tail);
   }
 
   /*
@@ -360,15 +379,15 @@ public:
    * @warning dereferencing can cause undefined behaviour
    */
   const_iterator cend() const noexcept {
-    return const_iterator(tail->next);
+    return const_iterator(tail->next, head, tail);
   }
 
   /**
    * @brief Clear deque
    */
   void Clear() {
-    while (deque.head != nullptr)
-      this.PopBack();
+    while (head != nullptr)
+      PopBack();
   }
 
   /**
